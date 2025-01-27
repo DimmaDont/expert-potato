@@ -1,0 +1,22 @@
+name: Build releases
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: echo "name=sha_short::$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - run: touch test.txt
+    - name: Publish
+      uses: softprops/action-gh-release@v2
+      with:
+          tag_name: a
+          files: test.txt
+          body: |
+            Note: These are daily builds. Attachments are automatically created and replaced on every new commit. Regardless of what the message above says. If you experience upgrade issues you may need to delete your 'ScannedFiles.db' file in VDF folder.
+            Last build based on ${{ steps.vars.outputs.sha_short }}
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
